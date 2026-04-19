@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0a0908">
-<title>Admin — Drey Tools</title>
+<title>ABS Club — Admin</title>
+<meta name="description" content="Always Be Shipping — Admin command center. Members, velocity, leaderboard, streaks.">
 <style>
   :root {
     --bg: #0a0908; --bg-1: #14110e; --bg-2: #1c1815; --bg-3: #2a2420;
@@ -20,19 +21,11 @@
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
     background: var(--bg); color: var(--text); line-height: 1.4;
-    overflow: hidden;
-  }
-  body::before {
-    content: ''; position: fixed; inset: 0; z-index: 0;
-    background:
-      radial-gradient(ellipse 60% 40% at 0% 0%, rgba(34, 211, 238, 0.05), transparent 60%),
-      radial-gradient(ellipse 50% 40% at 100% 100%, rgba(245, 158, 11, 0.04), transparent 60%);
-    pointer-events: none;
   }
 
   .app {
     position: relative; z-index: 1;
-    height: 100dvh;
+    min-height: 100dvh;
     display: grid;
     grid-template-columns: 240px 1fr;
   }
@@ -41,696 +34,535 @@
   /* SIDEBAR */
   .side {
     border-right: 1px solid var(--line);
-    background: var(--bg-1);
+    background: rgba(20,17,14,0.7);
+    backdrop-filter: blur(20px);
     padding: calc(var(--safe-top) + 16px) 12px calc(16px + var(--safe-bottom));
     overflow-y: auto;
     display: flex; flex-direction: column;
+    position: sticky; top: 0; height: 100dvh;
   }
   @media (max-width: 820px) { .side { display: none; } }
-
-  .side-brand {
-    padding: 8px 12px;
-    font-weight: 900; letter-spacing: -0.02em; font-size: 17px;
-    display: flex; align-items: center; gap: 8px;
-    margin-bottom: 20px;
-  }
-  .side-brand::before {
-    content: ''; width: 8px; height: 8px; border-radius: 50%;
-    background: var(--cyan); box-shadow: 0 0 10px var(--cyan);
-  }
-
-  .side-section {
-    font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
-    text-transform: uppercase; color: var(--text-muted);
-    padding: 14px 12px 6px;
-  }
-
-  .nav-item {
+  .brand { display: flex; align-items: center; gap: 10px; padding: 4px 8px 16px; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+  .logo { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--cyan), var(--cyan-dim)); display: grid; place-items: center; font-weight: 900; color: #0a0908; font-size: 14px; letter-spacing: -0.5px; }
+  .brand-name { font-weight: 700; font-size: 15px; letter-spacing: -0.02em; }
+  .brand-sub { font-size: 10px; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
+  .nav-section { margin-bottom: 20px; }
+  .nav-label { font-size: 10px; color: var(--text-muted); letter-spacing: 0.15em; text-transform: uppercase; padding: 0 8px 6px; }
+  .nav a {
     display: flex; align-items: center; gap: 10px;
-    padding: 9px 12px;
-    border-radius: 8px;
-    color: var(--text-dim); font-size: 14px; font-weight: 500;
-    cursor: pointer;
-    transition: all 0.1s;
-    text-decoration: none;
-    position: relative;
+    padding: 8px 10px; border-radius: 8px;
+    color: var(--text-dim); text-decoration: none;
+    font-size: 13px; font-weight: 500;
+    transition: all 0.15s;
+    margin-bottom: 2px;
   }
-  .nav-item:hover { background: var(--bg-2); color: var(--text); }
-  .nav-item.active {
-    background: rgba(34, 211, 238, 0.1);
-    color: var(--cyan);
-  }
-  .nav-item.active::before {
-    content: ''; position: absolute; left: 0; top: 8px; bottom: 8px;
-    width: 3px; background: var(--cyan); border-radius: 0 2px 2px 0;
-  }
-  .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
-  .nav-badge {
-    margin-left: auto;
-    font-size: 10px; font-weight: 800;
-    background: var(--cyan); color: var(--bg);
-    padding: 2px 7px; border-radius: 10px;
-    font-family: 'SF Mono', Menlo, monospace;
-  }
-
-  .side-footer {
-    margin-top: auto;
-    padding: 12px;
-    display: flex; align-items: center; gap: 10px;
-    border-top: 1px solid var(--line);
-    padding-top: 14px;
-  }
-  .side-av {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: linear-gradient(135deg, #22d3ee, #0891b2);
-    color: var(--bg); font-weight: 800; font-size: 12px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .side-user .name { font-size: 13px; font-weight: 700; }
-  .side-user .role { font-size: 11px; color: var(--text-muted); }
+  .nav a:hover { background: var(--bg-2); color: var(--text); }
+  .nav a.active { background: rgba(34, 211, 238, 0.08); color: var(--cyan); }
+  .nav a .ico { width: 16px; height: 16px; opacity: 0.8; }
+  .nav a .badge { margin-left: auto; font-size: 10px; padding: 2px 6px; border-radius: 10px; background: var(--bg-3); color: var(--text-dim); }
+  .nav a.active .badge { background: var(--cyan); color: #0a0908; }
+  .user-chip { margin-top: auto; padding: 10px 8px; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--pink), var(--violet)); display: grid; place-items: center; color: #0a0908; font-weight: 800; font-size: 12px; }
+  .user-name { font-size: 13px; font-weight: 600; }
+  .user-role { font-size: 10px; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
 
   /* MAIN */
-  .main {
-    overflow-y: auto;
-    display: flex; flex-direction: column;
-    background: var(--bg);
-  }
+  .main { padding: calc(var(--safe-top) + 20px) 24px calc(40px + var(--safe-bottom)); overflow-y: auto; }
+  @media (max-width: 820px) { .main { padding: calc(var(--safe-top) + 16px) 16px calc(20px + var(--safe-bottom)); } }
 
-  .top-bar {
-    padding: calc(var(--safe-top) + 16px) 24px 14px;
-    border-bottom: 1px solid var(--line);
-    display: flex; align-items: center; gap: 14px;
-    background: rgba(10,9,8,0.85);
-    backdrop-filter: blur(16px);
-    position: sticky; top: 0; z-index: 10;
-    flex-wrap: wrap;
-  }
-  .mobile-brand {
-    font-weight: 900; font-size: 16px; display: none;
-    align-items: center; gap: 8px;
-  }
-  .mobile-brand::before {
-    content: ''; width: 8px; height: 8px; border-radius: 50%;
-    background: var(--cyan); box-shadow: 0 0 10px var(--cyan);
-  }
-  @media (max-width: 820px) { .mobile-brand { display: flex; } }
-
-  .search-bar {
-    flex: 1; max-width: 380px;
-    position: relative;
-  }
-  .search-bar svg {
-    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-    width: 16px; height: 16px; color: var(--text-muted); pointer-events: none;
-  }
-  .search-bar input {
-    width: 100%; padding: 9px 14px 9px 36px;
-    background: var(--bg-2); border: 1px solid var(--line-hot);
-    color: var(--text); font-size: 14px; font-family: inherit;
-    border-radius: 10px; outline: none;
-  }
-  .search-bar input:focus { border-color: var(--cyan); }
-  @supports (-webkit-touch-callout: none) { .search-bar input { font-size: 16px; } }
-
-  .top-right { display: flex; gap: 6px; align-items: center; margin-left: auto; }
-  .icon-btn {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: var(--bg-2); border: 1px solid var(--line); color: var(--text-dim);
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    position: relative;
-  }
-  .icon-btn:hover { color: var(--cyan); border-color: var(--cyan); }
-  .icon-btn svg { width: 16px; height: 16px; }
-  .icon-btn .notif-dot {
-    position: absolute; top: 7px; right: 7px;
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--red); border: 2px solid var(--bg-2);
-  }
-  .top-av {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: linear-gradient(135deg, #22d3ee, #0891b2);
-    color: var(--bg); font-weight: 800; font-size: 12px;
-    display: flex; align-items: center; justify-content: center;
-    margin-left: 4px;
-    cursor: pointer;
-  }
-
-  /* CONTENT */
-  .content { padding: 28px 24px; }
-  .page-head { margin-bottom: 28px; }
-  h1 {
-    font-size: clamp(24px, 3.4vw, 30px); font-weight: 900;
-    letter-spacing: -0.02em; margin-bottom: 6px;
-  }
-  .page-head .sub { color: var(--text-dim); font-size: 14px; }
-
-  /* STATS GRID */
-  .stats-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 14px; margin-bottom: 32px;
-  }
-  .stat-card {
-    background: var(--bg-1); border: 1px solid var(--line);
-    border-radius: 14px; padding: 18px 20px;
-    position: relative; overflow: hidden;
-  }
-  .stat-head {
+  .header {
     display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 12px;
+    margin-bottom: 24px; gap: 12px; flex-wrap: wrap;
   }
-  .stat-label {
-    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
-    color: var(--text-muted); text-transform: uppercase;
+  h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.03em; }
+  .h-sub { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
+  .h-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 8px;
+    background: var(--bg-2); color: var(--text); border: 1px solid var(--line);
+    font: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer; text-decoration: none;
+    transition: all 0.15s;
   }
-  .stat-icon {
-    width: 32px; height: 32px; border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .stat-icon.cy { background: rgba(34,211,238,0.12); color: var(--cyan); }
-  .stat-icon.am { background: rgba(245,158,11,0.12); color: var(--amber); }
-  .stat-icon.gr { background: rgba(16,185,129,0.12); color: var(--green); }
-  .stat-icon.pk { background: rgba(236,72,153,0.12); color: var(--pink); }
-  .stat-icon svg { width: 16px; height: 16px; }
-  .stat-val {
-    font-size: 28px; font-weight: 900; letter-spacing: -0.03em;
-    line-height: 1; margin-bottom: 6px;
-    font-feature-settings: 'tnum' 1;
-  }
-  .stat-delta {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-size: 12px; font-weight: 700;
-    padding: 2px 8px; border-radius: 5px;
-    font-family: 'SF Mono', Menlo, monospace;
-  }
-  .stat-delta.up { background: rgba(16,185,129,0.12); color: var(--green); }
-  .stat-delta.down { background: rgba(239,68,68,0.12); color: #f87171; }
-  .stat-delta.flat { background: var(--bg-3); color: var(--text-muted); }
-  .stat-delta svg { width: 11px; height: 11px; }
-  .stat-spark {
-    margin-top: 10px;
-    height: 30px;
-    width: 100%;
-  }
+  .btn:hover { background: var(--bg-3); border-color: var(--line-hot); }
+  .btn-cyan { background: var(--cyan); color: #0a0908; border-color: var(--cyan); }
+  .btn-cyan:hover { background: var(--cyan-dim); border-color: var(--cyan-dim); color: #f5ead9; }
 
-  /* GRID SECTIONS */
-  .grid-2 {
-    display: grid; grid-template-columns: 2fr 1fr;
-    gap: 16px;
+  /* STAT GRID */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
     margin-bottom: 24px;
   }
-  @media (max-width: 820px) { .grid-2 { grid-template-columns: 1fr; } }
-
-  .panel {
-    background: var(--bg-1); border: 1px solid var(--line);
+  @media (max-width: 1024px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .stats { grid-template-columns: 1fr; } }
+  .stat {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
     border-radius: 14px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
   }
-  .panel-head {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--line);
+  .stat-label { font-size: 11px; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+  .stat-value { font-size: 30px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+  .stat-sub { margin-top: 8px; font-size: 12px; display: flex; align-items: center; gap: 6px; color: var(--text-dim); }
+  .stat-chg-up { color: var(--green); }
+  .stat-chg-down { color: var(--red); }
+  .sparkline { position: absolute; right: 12px; bottom: 12px; width: 80px; height: 30px; opacity: 0.9; }
+  .stat-accent-cyan { border-color: rgba(34, 211, 238, 0.2); }
+  .stat-accent-green { border-color: rgba(16, 185, 129, 0.2); }
+  .stat-accent-amber { border-color: rgba(245, 158, 11, 0.2); }
+  .stat-accent-pink { border-color: rgba(236, 72, 153, 0.2); }
+
+  /* ROW LAYOUT */
+  .row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; }
+  @media (max-width: 1024px) { .row { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px;
+  }
+  .card-head {
     display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
   }
-  .panel-title { font-size: 14px; font-weight: 800; letter-spacing: -0.01em; }
-  .panel-link {
-    font-size: 12px; color: var(--cyan); font-weight: 600;
-    text-decoration: none;
+  .card-title { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+  .card-sub { font-size: 11px; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px; }
+  .tabs { display: flex; gap: 4px; }
+  .tab {
+    padding: 4px 10px; border-radius: 6px;
+    background: var(--bg-2); color: var(--text-dim);
+    font-size: 12px; font-weight: 500; cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
   }
-  .panel-body { padding: 16px 20px; }
+  .tab.active { background: rgba(34, 211, 238, 0.08); color: var(--cyan); border-color: rgba(34, 211, 238, 0.2); }
 
   /* CHART */
-  .chart-wrap {
-    position: relative; width: 100%;
-    height: 200px;
-  }
-  .chart-legend {
-    display: flex; gap: 18px; margin-bottom: 14px;
-    font-size: 12px;
-  }
-  .chart-legend-item { display: flex; align-items: center; gap: 6px; color: var(--text-dim); }
-  .chart-legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+  .chart { height: 240px; width: 100%; }
 
-  /* TABLE */
-  .table {
-    width: 100%; border-collapse: collapse;
+  /* ACTIVITY */
+  .activity { display: flex; flex-direction: column; gap: 12px; max-height: 280px; overflow-y: auto; }
+  .event { display: flex; gap: 12px; align-items: flex-start; padding: 2px 0; }
+  .event-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .event-dot.cyan { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+  .event-dot.green { background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .event-dot.amber { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+  .event-dot.pink { background: var(--pink); box-shadow: 0 0 8px var(--pink); }
+  .event-body { flex: 1; min-width: 0; }
+  .event-title { font-size: 13px; font-weight: 600; }
+  .event-title b { color: var(--cyan); font-weight: 700; }
+  .event-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; letter-spacing: 0.05em; }
+
+  /* MEMBERS TABLE */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td {
+    text-align: left; padding: 10px 12px;
     font-size: 13px;
-  }
-  .table th {
-    text-align: left; padding: 10px 20px;
-    font-size: 10px; letter-spacing: 0.08em; font-weight: 700;
-    text-transform: uppercase; color: var(--text-muted);
     border-bottom: 1px solid var(--line);
-    background: var(--bg-1);
-    position: sticky; top: 0;
+    white-space: nowrap;
   }
-  .table td {
-    padding: 12px 20px;
-    border-bottom: 1px solid var(--line);
+  th {
+    font-size: 10px; color: var(--text-muted);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    font-weight: 600;
+    position: sticky; top: 0; background: var(--bg-1);
   }
-  .table tr:last-child td { border-bottom: none; }
-  .table tr:hover td { background: var(--bg-2); }
-  .table .user-cell {
-    display: flex; align-items: center; gap: 10px;
-  }
-  .mini-av {
-    width: 28px; height: 28px; border-radius: 50%;
-    font-size: 10px; font-weight: 800; color: var(--bg);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .mini-av.cy { background: linear-gradient(135deg, #22d3ee, #0891b2); }
-  .mini-av.am { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
-  .mini-av.pk { background: linear-gradient(135deg, #ec4899, #be185d); color: #fff; }
-  .mini-av.vl { background: linear-gradient(135deg, #a78bfa, #7c3aed); color: #fff; }
-  .mini-av.gr { background: linear-gradient(135deg, #10b981, #047857); color: #fff; }
-  .user-name { font-weight: 600; }
-  .user-email { font-size: 11px; color: var(--text-muted); }
-  .status-pill {
-    display: inline-block;
-    padding: 3px 10px; border-radius: 5px;
-    font-size: 10px; font-weight: 800; letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-  .status-pill.active { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
-  .status-pill.pending { background: rgba(245,158,11,0.15); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
-  .status-pill.churned { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
-  .amount-col { font-family: 'SF Mono', Menlo, monospace; font-weight: 700; text-align: right; }
+  tbody tr:hover { background: var(--bg-2); }
+  tbody tr:last-child td { border-bottom: none; }
+  .member-name { display: flex; align-items: center; gap: 10px; }
+  .member-avatar { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 11px; color: #0a0908; }
+  .pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .pill-green { background: rgba(16, 185, 129, 0.12); color: var(--green); }
+  .pill-cyan { background: rgba(34, 211, 238, 0.12); color: var(--cyan); }
+  .pill-amber { background: rgba(245, 158, 11, 0.12); color: var(--amber); }
+  .pill-muted { background: var(--bg-2); color: var(--text-muted); }
+  .streak { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; color: var(--amber); }
 
-  /* ACTIVITY FEED */
-  .feed { display: flex; flex-direction: column; gap: 14px; }
-  .feed-item {
-    display: flex; gap: 12px;
-  }
-  .feed-dot {
-    width: 32px; height: 32px; border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .feed-dot.cy { background: rgba(34,211,238,0.12); color: var(--cyan); }
-  .feed-dot.gr { background: rgba(16,185,129,0.12); color: var(--green); }
-  .feed-dot.am { background: rgba(245,158,11,0.12); color: var(--amber); }
-  .feed-dot.pk { background: rgba(236,72,153,0.12); color: var(--pink); }
-  .feed-dot svg { width: 14px; height: 14px; }
-  .feed-body { flex: 1; min-width: 0; }
-  .feed-text { font-size: 13px; line-height: 1.4; }
-  .feed-text b { color: var(--text); font-weight: 700; }
-  .feed-time {
-    font-size: 11px; color: var(--text-muted);
-    font-family: 'SF Mono', Menlo, monospace;
-    margin-top: 2px;
+  /* LEADERBOARD */
+  .board { display: flex; flex-direction: column; gap: 10px; }
+  .board-row { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 10px; background: var(--bg-2); }
+  .board-row:hover { background: var(--bg-3); }
+  .board-rank { font-weight: 800; font-size: 14px; width: 24px; text-align: center; color: var(--text-muted); }
+  .board-row.top .board-rank { color: var(--cyan); }
+  .board-row.gold .board-rank { color: var(--amber); }
+  .board-avatar { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 11px; color: #0a0908; }
+  .board-info { flex: 1; min-width: 0; }
+  .board-name { font-size: 13px; font-weight: 600; }
+  .board-meta { font-size: 11px; color: var(--text-muted); }
+  .board-score { font-weight: 800; font-size: 15px; color: var(--cyan); }
+
+  /* footer */
+  .foot { margin-top: 32px; padding: 18px 0; border-top: 1px solid var(--line); font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .foot a { color: var(--text-dim); text-decoration: none; }
+  .foot a:hover { color: var(--cyan); }
+  .ops-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--bg-2); border: 1px solid var(--line); font-size: 11px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+  .ops-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
+
+  /* mobile header */
+  .mobile-head { display: none; padding: calc(var(--safe-top) + 12px) 16px 12px; border-bottom: 1px solid var(--line); align-items: center; justify-content: space-between; }
+  @media (max-width: 820px) {
+    .mobile-head { display: flex; }
+    .main { padding-top: 16px; }
   }
 </style>
 </head>
 <body>
 
-<div class="app">
+<div class="mobile-head">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="logo" style="width:28px;height:28px;font-size:12px;">A</div>
+    <div>
+      <div style="font-weight:700;font-size:14px;">ABS Club</div>
+      <div style="font-size:9px;color:var(--text-muted);letter-spacing:0.15em;text-transform:uppercase;">Admin</div>
+    </div>
+  </div>
+  <div class="ops-chip"><span class="ops-dot"></span>Live</div>
+</div>
 
+<div class="app">
   <!-- SIDEBAR -->
   <aside class="side">
-    <div class="side-brand">Drey Admin</div>
+    <div class="brand">
+      <div class="logo">A</div>
+      <div>
+        <div class="brand-name">ABS Club</div>
+        <div class="brand-sub">Admin</div>
+      </div>
+    </div>
 
-    <div class="side-section">Workspace</div>
-    <a class="nav-item active" href="#">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-      Dashboard
-    </a>
-    <a class="nav-item" href="#">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      Members
-      <span class="nav-badge">247</span>
-    </a>
-    <a class="nav-item" href="#">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      Revenue
-    </a>
-    <a class="nav-item" href="#">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
-      Analytics
-    </a>
-    <a class="nav-item" href="#">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      Messages
-      <span class="nav-badge">3</span>
-    </a>
+    <div class="nav-section">
+      <div class="nav-label">Overview</div>
+      <nav class="nav">
+        <a href="#" class="active"><span>▣</span> Dashboard</a>
+        <a href="#"><span>◎</span> Members <span class="badge">42</span></a>
+        <a href="#"><span>◐</span> Cohorts</a>
+        <a href="#"><span>▲</span> Leaderboard</a>
+      </nav>
+    </div>
 
-    <div class="side-section">Tools</div>
-    <a class="nav-item" href="https://player.dreytools.com" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-      Music Player
-    </a>
-    <a class="nav-item" href="https://weather.dreytools.com" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
-      Weather
-    </a>
-    <a class="nav-item" href="https://chat.dreytools.com" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-      Chat
-    </a>
-    <a class="nav-item" href="https://tasks.dreytools.com" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      Tasks
-    </a>
-    <a class="nav-item" href="https://scheduling.dreytools.com" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      Scheduling
-    </a>
+    <div class="nav-section">
+      <div class="nav-label">Shipping</div>
+      <nav class="nav">
+        <a href="#"><span>◉</span> Weekly Ship</a>
+        <a href="#"><span>◆</span> Streaks</a>
+        <a href="#"><span>◇</span> Applications <span class="badge">7</span></a>
+      </nav>
+    </div>
 
-    <div class="side-section">Settings</div>
-    <a class="nav-item" href="#">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      Settings
-    </a>
+    <div class="nav-section">
+      <div class="nav-label">Community</div>
+      <nav class="nav">
+        <a href="#"><span>◈</span> Calls</a>
+        <a href="#"><span>☰</span> Announcements</a>
+        <a href="#"><span>⚙</span> Settings</a>
+      </nav>
+    </div>
 
-    <div class="side-footer">
-      <div class="side-av">DR</div>
-      <div class="side-user">
-        <div class="name">Drey Thomas</div>
-        <div class="role">Admin · owner</div>
+    <div class="user-chip">
+      <div class="avatar">D</div>
+      <div style="flex:1;min-width:0;">
+        <div class="user-name">Drey</div>
+        <div class="user-role">Co-Founder</div>
       </div>
     </div>
   </aside>
 
   <!-- MAIN -->
   <main class="main">
-    <div class="top-bar">
-      <div class="mobile-brand">Drey Admin</div>
-      <div class="search-bar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" placeholder="Search members, revenue, events..." />
+    <div class="header">
+      <div>
+        <h1>Always Be Shipping</h1>
+        <div class="h-sub">Cohort 01 · Week 3 of 12 · Next call Mon 7pm ET</div>
       </div>
-      <div class="top-right">
-        <button class="icon-btn" aria-label="Notifications">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          <span class="notif-dot"></span>
-        </button>
-        <button class="icon-btn" aria-label="Help">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        </button>
-        <div class="top-av">DR</div>
+      <div class="h-actions">
+        <div class="ops-chip"><span class="ops-dot"></span>Live</div>
+        <a class="btn" href="https://abs.dreytools.com" target="_blank">View Site</a>
+        <button class="btn btn-cyan">+ Announce</button>
       </div>
     </div>
 
-    <div class="content">
-      <div class="page-head">
-        <h1>Welcome back, <span style="color:var(--cyan)">Drey.</span></h1>
-        <div class="sub">Snapshot of your tools, members, and revenue — last 30 days.</div>
+    <!-- STATS -->
+    <div class="stats">
+      <div class="stat stat-accent-cyan">
+        <div class="stat-label">Active Members</div>
+        <div class="stat-value">42</div>
+        <div class="stat-sub"><span class="stat-chg-up">▲ 6</span> this week</div>
+        <svg class="sparkline" viewBox="0 0 80 30" preserveAspectRatio="none">
+          <polyline points="0,22 10,20 20,18 30,19 40,14 50,12 60,10 70,8 80,6" fill="none" stroke="var(--cyan)" stroke-width="1.5" />
+        </svg>
+      </div>
+      <div class="stat stat-accent-green">
+        <div class="stat-label">Ships This Week</div>
+        <div class="stat-value">87</div>
+        <div class="stat-sub"><span class="stat-chg-up">▲ 23%</span> vs last week</div>
+        <svg class="sparkline" viewBox="0 0 80 30" preserveAspectRatio="none">
+          <polyline points="0,24 10,20 20,22 30,18 40,19 50,14 60,12 70,10 80,4" fill="none" stroke="var(--green)" stroke-width="1.5" />
+        </svg>
+      </div>
+      <div class="stat stat-accent-amber">
+        <div class="stat-label">Longest Streak</div>
+        <div class="stat-value">47<span style="font-size:14px;color:var(--text-muted);font-weight:500;">d</span></div>
+        <div class="stat-sub">Carla · still shipping</div>
+        <svg class="sparkline" viewBox="0 0 80 30" preserveAspectRatio="none">
+          <polyline points="0,26 10,24 20,22 30,20 40,17 50,14 60,10 70,7 80,4" fill="none" stroke="var(--amber)" stroke-width="1.5" />
+        </svg>
+      </div>
+      <div class="stat stat-accent-pink">
+        <div class="stat-label">MRR</div>
+        <div class="stat-value">$21K</div>
+        <div class="stat-sub"><span class="stat-chg-up">▲ $3K</span> ARR pace $252K</div>
+        <svg class="sparkline" viewBox="0 0 80 30" preserveAspectRatio="none">
+          <polyline points="0,28 10,25 20,22 30,20 40,16 50,13 60,10 70,7 80,3" fill="none" stroke="var(--pink)" stroke-width="1.5" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- ROW: CHART + LEADERBOARD -->
+    <div class="row">
+      <!-- CHART -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Weekly Ship Velocity</div>
+            <div class="card-sub">Cohort 01 · last 8 weeks</div>
+          </div>
+          <div class="tabs">
+            <div class="tab">4W</div>
+            <div class="tab active">8W</div>
+            <div class="tab">12W</div>
+          </div>
+        </div>
+        <svg class="chart" viewBox="0 0 800 240" preserveAspectRatio="none">
+          <!-- grid -->
+          <line x1="0" y1="60" x2="800" y2="60" stroke="var(--line)" stroke-dasharray="2,4" />
+          <line x1="0" y1="120" x2="800" y2="120" stroke="var(--line)" stroke-dasharray="2,4" />
+          <line x1="0" y1="180" x2="800" y2="180" stroke="var(--line)" stroke-dasharray="2,4" />
+
+          <!-- area -->
+          <defs>
+            <linearGradient id="fade" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.32" />
+              <stop offset="100%" stop-color="#22d3ee" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+          <path d="M 0,200 L 100,180 L 200,165 L 300,170 L 400,140 L 500,120 L 600,95 L 700,70 L 800,55 L 800,240 L 0,240 Z"
+                fill="url(#fade)" />
+          <polyline points="0,200 100,180 200,165 300,170 400,140 500,120 600,95 700,70 800,55"
+                    fill="none" stroke="#22d3ee" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- points -->
+          <circle cx="800" cy="55" r="4" fill="#22d3ee" />
+
+          <!-- labels -->
+          <text x="0" y="232" fill="#6b5d4f" font-size="10" font-family="Inter,system-ui">W1</text>
+          <text x="100" y="232" fill="#6b5d4f" font-size="10" font-family="Inter,system-ui">W2</text>
+          <text x="200" y="232" fill="#6b5d4f" font-size="10" font-family="Inter,system-ui">W3</text>
+          <text x="300" y="232" fill="#6b5d4f" font-size="10" font-family="Inter,system-ui">W4</text>
+          <text x="400" y="232" fill="#6b5d4f" font-size="10" font-family="Inter,system-ui">W5</text>
+          <text x="500" y="232" fill="#6b5d4f" font-size="10" font-family="Inter,system-ui">W6</text>
+          <text x="600" y="232" fill="#6b5d4f" font-size="10" font-family="Inter,system-ui">W7</text>
+          <text x="700" y="232" fill="#6b5d4f" font-size="10" font-family="Inter,system-ui">W8</text>
+        </svg>
       </div>
 
-      <!-- STATS -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-head">
-            <span class="stat-label">Active Members</span>
-            <div class="stat-icon cy">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-            </div>
-          </div>
-          <div class="stat-val">247</div>
-          <span class="stat-delta up">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
-            +18 this week
-          </span>
-          <svg class="stat-spark" viewBox="0 0 200 30" preserveAspectRatio="none" data-spark="cy">
-            <polyline points="0,22 20,20 40,21 60,17 80,15 100,12 120,13 140,8 160,9 180,5 200,4" fill="none" stroke="#22d3ee" stroke-width="1.5" />
-          </svg>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-head">
-            <span class="stat-label">Monthly Revenue</span>
-            <div class="stat-icon gr">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            </div>
-          </div>
-          <div class="stat-val">$24,120</div>
-          <span class="stat-delta up">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
-            +32% MoM
-          </span>
-          <svg class="stat-spark" viewBox="0 0 200 30" preserveAspectRatio="none">
-            <polyline points="0,26 20,24 40,22 60,23 80,18 100,15 120,13 140,10 160,11 180,6 200,3" fill="none" stroke="#10b981" stroke-width="1.5" />
-          </svg>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-head">
-            <span class="stat-label">New Signups (30d)</span>
-            <div class="stat-icon am">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-            </div>
-          </div>
-          <div class="stat-val">48</div>
-          <span class="stat-delta up">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
-            +12%
-          </span>
-          <svg class="stat-spark" viewBox="0 0 200 30" preserveAspectRatio="none">
-            <polyline points="0,20 20,18 40,22 60,15 80,17 100,10 120,14 140,12 160,8 180,11 200,6" fill="none" stroke="#f59e0b" stroke-width="1.5" />
-          </svg>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-head">
-            <span class="stat-label">Churn Rate</span>
-            <div class="stat-icon pk">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-            </div>
-          </div>
-          <div class="stat-val">2.1%</div>
-          <span class="stat-delta down">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-            -0.4% MoM
-          </span>
-          <svg class="stat-spark" viewBox="0 0 200 30" preserveAspectRatio="none">
-            <polyline points="0,8 20,10 40,7 60,9 80,6 100,12 120,10 140,14 160,11 180,16 200,20" fill="none" stroke="#ec4899" stroke-width="1.5" />
-          </svg>
-        </div>
-      </div>
-
-      <!-- MAIN GRID -->
-      <div class="grid-2">
-        <!-- REVENUE CHART -->
-        <div class="panel">
-          <div class="panel-head">
-            <div class="panel-title">Revenue · last 30 days</div>
-            <a class="panel-link" href="#">Full report →</a>
-          </div>
-          <div class="panel-body">
-            <div class="chart-legend">
-              <div class="chart-legend-item"><span class="chart-legend-dot" style="background: var(--cyan)"></span>Subscriptions</div>
-              <div class="chart-legend-item"><span class="chart-legend-dot" style="background: var(--amber)"></span>One-time</div>
-            </div>
-            <div class="chart-wrap">
-              <svg viewBox="0 0 600 200" preserveAspectRatio="none" style="width:100%;height:100%;">
-                <defs>
-                  <linearGradient id="fill-cy" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.25"/>
-                    <stop offset="100%" stop-color="#22d3ee" stop-opacity="0"/>
-                  </linearGradient>
-                  <linearGradient id="fill-am" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.18"/>
-                    <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
-                  </linearGradient>
-                </defs>
-                <!-- Gridlines -->
-                <line x1="0" y1="50" x2="600" y2="50" stroke="#2e2722" stroke-width="1"/>
-                <line x1="0" y1="100" x2="600" y2="100" stroke="#2e2722" stroke-width="1"/>
-                <line x1="0" y1="150" x2="600" y2="150" stroke="#2e2722" stroke-width="1"/>
-                <!-- One-time area -->
-                <path d="M0,160 L20,155 L40,158 L60,148 L80,152 L100,142 L120,145 L140,135 L160,138 L180,128 L200,132 L220,120 L240,125 L260,118 L280,122 L300,112 L320,115 L340,108 L360,110 L380,102 L400,104 L420,95 L440,98 L460,88 L480,92 L500,82 L520,85 L540,78 L560,70 L580,72 L600,65 L600,200 L0,200 Z" fill="url(#fill-am)"/>
-                <polyline points="0,160 20,155 40,158 60,148 80,152 100,142 120,145 140,135 160,138 180,128 200,132 220,120 240,125 260,118 280,122 300,112 320,115 340,108 360,110 380,102 400,104 420,95 440,98 460,88 480,92 500,82 520,85 540,78 560,70 580,72 600,65" fill="none" stroke="#f59e0b" stroke-width="2"/>
-                <!-- Subscription area (on top) -->
-                <path d="M0,140 L20,135 L40,130 L60,128 L80,122 L100,118 L120,114 L140,108 L160,102 L180,95 L200,90 L220,85 L240,80 L260,75 L280,70 L300,65 L320,62 L340,58 L360,55 L380,50 L400,46 L420,42 L440,40 L460,36 L480,32 L500,28 L520,25 L540,22 L560,18 L580,15 L600,12 L600,200 L0,200 Z" fill="url(#fill-cy)"/>
-                <polyline points="0,140 20,135 40,130 60,128 80,122 100,118 120,114 140,108 160,102 180,95 200,90 220,85 240,80 260,75 280,70 300,65 320,62 340,58 360,55 380,50 400,46 420,42 440,40 460,36 480,32 500,28 520,25 540,22 560,18 580,15 600,12" fill="none" stroke="#22d3ee" stroke-width="2.5"/>
-              </svg>
-            </div>
+      <!-- LEADERBOARD -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Top Shippers</div>
+            <div class="card-sub">This week</div>
           </div>
         </div>
-
-        <!-- ACTIVITY -->
-        <div class="panel">
-          <div class="panel-head">
-            <div class="panel-title">Recent activity</div>
-            <a class="panel-link" href="#">View all</a>
+        <div class="board">
+          <div class="board-row gold">
+            <div class="board-rank">1</div>
+            <div class="board-avatar" style="background:linear-gradient(135deg,var(--amber),var(--pink));">CA</div>
+            <div class="board-info"><div class="board-name">Carla A.</div><div class="board-meta">47d streak · 12 ships</div></div>
+            <div class="board-score">142</div>
           </div>
-          <div class="panel-body">
-            <div class="feed">
-              <div class="feed-item">
-                <div class="feed-dot gr">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                </div>
-                <div class="feed-body">
-                  <div class="feed-text"><b>Maya R.</b> signed up for Pro · $97</div>
-                  <div class="feed-time">4 min ago</div>
-                </div>
-              </div>
-              <div class="feed-item">
-                <div class="feed-dot cy">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-                </div>
-                <div class="feed-body">
-                  <div class="feed-text"><b>12 new members</b> joined today</div>
-                  <div class="feed-time">23 min ago</div>
-                </div>
-              </div>
-              <div class="feed-item">
-                <div class="feed-dot am">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                </div>
-                <div class="feed-body">
-                  <div class="feed-text">Usage spike on <b>weather.dreytools.com</b></div>
-                  <div class="feed-time">1 hr ago</div>
-                </div>
-              </div>
-              <div class="feed-item">
-                <div class="feed-dot pk">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                </div>
-                <div class="feed-body">
-                  <div class="feed-text">New support ticket from <b>Amanda K.</b></div>
-                  <div class="feed-time">2 hr ago</div>
-                </div>
-              </div>
-              <div class="feed-item">
-                <div class="feed-dot gr">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                </div>
-                <div class="feed-body">
-                  <div class="feed-text"><b>chat.dreytools.com</b> deployed to prod</div>
-                  <div class="feed-time">3 hr ago</div>
-                </div>
-              </div>
-              <div class="feed-item">
-                <div class="feed-dot cy">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                </div>
-                <div class="feed-body">
-                  <div class="feed-text"><b>Kevin</b> closed Tampa deal · $12,000</div>
-                  <div class="feed-time">6 hr ago</div>
-                </div>
-              </div>
-            </div>
+          <div class="board-row top">
+            <div class="board-rank">2</div>
+            <div class="board-avatar" style="background:linear-gradient(135deg,var(--cyan),var(--green));">JW</div>
+            <div class="board-info"><div class="board-name">Jordan W.</div><div class="board-meta">31d streak · 10 ships</div></div>
+            <div class="board-score">118</div>
+          </div>
+          <div class="board-row top">
+            <div class="board-rank">3</div>
+            <div class="board-avatar" style="background:linear-gradient(135deg,var(--pink),var(--violet));">MR</div>
+            <div class="board-info"><div class="board-name">Maya R.</div><div class="board-meta">19d streak · 9 ships</div></div>
+            <div class="board-score">107</div>
+          </div>
+          <div class="board-row">
+            <div class="board-rank">4</div>
+            <div class="board-avatar" style="background:linear-gradient(135deg,var(--violet),var(--cyan));">NT</div>
+            <div class="board-info"><div class="board-name">Nate T.</div><div class="board-meta">14d streak · 8 ships</div></div>
+            <div class="board-score">92</div>
+          </div>
+          <div class="board-row">
+            <div class="board-rank">5</div>
+            <div class="board-avatar" style="background:linear-gradient(135deg,var(--green),var(--amber));">SH</div>
+            <div class="board-info"><div class="board-name">Sam H.</div><div class="board-meta">8d streak · 7 ships</div></div>
+            <div class="board-score">81</div>
           </div>
         </div>
       </div>
+    </div>
 
+    <!-- ROW: MEMBERS + ACTIVITY -->
+    <div class="row">
       <!-- MEMBERS TABLE -->
-      <div class="panel">
-        <div class="panel-head">
-          <div class="panel-title">Recent members</div>
-          <a class="panel-link" href="#">Manage all →</a>
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Members</div>
+            <div class="card-sub">Cohort 01 · sorted by ship score</div>
+          </div>
+          <button class="btn">+ Invite</button>
         </div>
-        <div style="overflow-x: auto;">
-          <table class="table">
+        <div class="table-wrap">
+          <table>
             <thead>
-              <tr>
-                <th>Member</th>
-                <th>Plan</th>
-                <th>Joined</th>
-                <th>Status</th>
-                <th style="text-align:right;">LTV</th>
-              </tr>
+              <tr><th>Member</th><th>Status</th><th>Streak</th><th>Ships</th><th>Joined</th></tr>
             </thead>
             <tbody>
               <tr>
-                <td>
-                  <div class="user-cell">
-                    <div class="mini-av cy">MR</div>
-                    <div>
-                      <div class="user-name">Maya R.</div>
-                      <div class="user-email">maya.r@pinehillcoop.com</div>
-                    </div>
-                  </div>
-                </td>
-                <td>Pro</td>
-                <td>4 min ago</td>
-                <td><span class="status-pill active">Active</span></td>
-                <td class="amount-col">$97</td>
+                <td><div class="member-name"><div class="member-avatar" style="background:linear-gradient(135deg,var(--amber),var(--pink));">CA</div>Carla Alvarez</div></td>
+                <td><span class="pill pill-green">● Active</span></td>
+                <td><span class="streak">◆ 47d</span></td>
+                <td>12</td>
+                <td>Feb 28</td>
               </tr>
               <tr>
-                <td>
-                  <div class="user-cell">
-                    <div class="mini-av am">AK</div>
-                    <div>
-                      <div class="user-name">Amanda K.</div>
-                      <div class="user-email">amanda@amandazw.com</div>
-                    </div>
-                  </div>
-                </td>
-                <td>Pro · Yearly</td>
-                <td>Yesterday</td>
-                <td><span class="status-pill active">Active</span></td>
-                <td class="amount-col">$970</td>
+                <td><div class="member-name"><div class="member-avatar" style="background:linear-gradient(135deg,var(--cyan),var(--green));">JW</div>Jordan Wells</div></td>
+                <td><span class="pill pill-green">● Active</span></td>
+                <td><span class="streak">◆ 31d</span></td>
+                <td>10</td>
+                <td>Mar 02</td>
               </tr>
               <tr>
-                <td>
-                  <div class="user-cell">
-                    <div class="mini-av pk">ST</div>
-                    <div>
-                      <div class="user-name">Sarah T.</div>
-                      <div class="user-email">sarah@buildersprint.com</div>
-                    </div>
-                  </div>
-                </td>
-                <td>Starter</td>
-                <td>2 days ago</td>
-                <td><span class="status-pill active">Active</span></td>
-                <td class="amount-col">$29</td>
+                <td><div class="member-name"><div class="member-avatar" style="background:linear-gradient(135deg,var(--pink),var(--violet));">MR</div>Maya Richter</div></td>
+                <td><span class="pill pill-green">● Active</span></td>
+                <td><span class="streak">◆ 19d</span></td>
+                <td>9</td>
+                <td>Mar 10</td>
               </tr>
               <tr>
-                <td>
-                  <div class="user-cell">
-                    <div class="mini-av vl">MT</div>
-                    <div>
-                      <div class="user-name">Marco T.</div>
-                      <div class="user-email">marco.t@fastfwd.io</div>
-                    </div>
-                  </div>
-                </td>
-                <td>Enterprise</td>
-                <td>3 days ago</td>
-                <td><span class="status-pill pending">Trial</span></td>
-                <td class="amount-col">—</td>
+                <td><div class="member-name"><div class="member-avatar" style="background:linear-gradient(135deg,var(--violet),var(--cyan));">NT</div>Nate Tran</div></td>
+                <td><span class="pill pill-green">● Active</span></td>
+                <td><span class="streak">◆ 14d</span></td>
+                <td>8</td>
+                <td>Mar 15</td>
               </tr>
               <tr>
-                <td>
-                  <div class="user-cell">
-                    <div class="mini-av gr">KR</div>
-                    <div>
-                      <div class="user-name">Kenji R.</div>
-                      <div class="user-email">kenji@northstarlabs.co</div>
-                    </div>
-                  </div>
-                </td>
-                <td>Pro</td>
-                <td>1 week ago</td>
-                <td><span class="status-pill active">Active</span></td>
-                <td class="amount-col">$97</td>
+                <td><div class="member-name"><div class="member-avatar" style="background:linear-gradient(135deg,var(--green),var(--amber));">SH</div>Sam Hernandez</div></td>
+                <td><span class="pill pill-cyan">New</span></td>
+                <td><span class="streak">◆ 8d</span></td>
+                <td>7</td>
+                <td>Apr 02</td>
               </tr>
               <tr>
-                <td>
-                  <div class="user-cell">
-                    <div class="mini-av cy">JN</div>
-                    <div>
-                      <div class="user-name">Jordan N.</div>
-                      <div class="user-email">jordan@grindclub.app</div>
-                    </div>
-                  </div>
-                </td>
-                <td>Pro</td>
-                <td>2 weeks ago</td>
-                <td><span class="status-pill churned">Churned</span></td>
-                <td class="amount-col">$194</td>
+                <td><div class="member-name"><div class="member-avatar" style="background:linear-gradient(135deg,var(--red),var(--pink));">AP</div>Alex Patel</div></td>
+                <td><span class="pill pill-amber">● Slipping</span></td>
+                <td><span class="streak" style="color:var(--text-muted);">◇ 2d</span></td>
+                <td>5</td>
+                <td>Mar 18</td>
+              </tr>
+              <tr>
+                <td><div class="member-name"><div class="member-avatar" style="background:linear-gradient(135deg,var(--cyan),var(--pink));">LK</div>Lauren Kim</div></td>
+                <td><span class="pill pill-green">● Active</span></td>
+                <td><span class="streak">◆ 22d</span></td>
+                <td>7</td>
+                <td>Mar 04</td>
+              </tr>
+              <tr>
+                <td><div class="member-name"><div class="member-avatar" style="background:linear-gradient(135deg,var(--amber),var(--green));">OM</div>Oscar Moore</div></td>
+                <td><span class="pill pill-muted">● Invited</span></td>
+                <td><span class="streak" style="color:var(--text-muted);">—</span></td>
+                <td>0</td>
+                <td>Apr 16</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
+
+      <!-- ACTIVITY -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Live Feed</div>
+            <div class="card-sub">Ships, streaks, applications</div>
+          </div>
+        </div>
+        <div class="activity">
+          <div class="event">
+            <div class="event-dot cyan"></div>
+            <div class="event-body">
+              <div class="event-title"><b>Carla</b> shipped day 47 — "New onboarding flow live"</div>
+              <div class="event-meta">12 min ago · Linear</div>
+            </div>
+          </div>
+          <div class="event">
+            <div class="event-dot green"></div>
+            <div class="event-body">
+              <div class="event-title">New application · <b>Priya S.</b></div>
+              <div class="event-meta">38 min ago · building DTC brand</div>
+            </div>
+          </div>
+          <div class="event">
+            <div class="event-dot amber"></div>
+            <div class="event-body">
+              <div class="event-title"><b>Jordan</b> hit 10-ship milestone</div>
+              <div class="event-meta">1 hr ago · +5 points</div>
+            </div>
+          </div>
+          <div class="event">
+            <div class="event-dot pink"></div>
+            <div class="event-body">
+              <div class="event-title">Weekly call scheduled — Mon 7pm ET</div>
+              <div class="event-meta">2 hrs ago · Google Meet</div>
+            </div>
+          </div>
+          <div class="event">
+            <div class="event-dot cyan"></div>
+            <div class="event-body">
+              <div class="event-title"><b>Maya</b> posted demo — "Voice agent v2"</div>
+              <div class="event-meta">4 hrs ago · 12 reactions</div>
+            </div>
+          </div>
+          <div class="event">
+            <div class="event-dot green"></div>
+            <div class="event-body">
+              <div class="event-title"><b>Sam</b> joined Cohort 01</div>
+              <div class="event-meta">Yesterday · welcome call booked</div>
+            </div>
+          </div>
+          <div class="event">
+            <div class="event-dot amber"></div>
+            <div class="event-body">
+              <div class="event-title"><b>Nate</b> renewed membership — $500/mo</div>
+              <div class="event-meta">Yesterday · MRR +$500</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="foot">
+      <div>
+        <b style="color:var(--text)">ABS Club Admin</b> · part of <a href="https://showcase.dreytools.com">One-Person Software</a> · built by <a href="https://drdrey.com">drey</a>
+      </div>
+      <div>Seed data · KV backend wiring pending</div>
     </div>
   </main>
-
 </div>
 
-<style>.ops-chip{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom));right:calc(16px + env(safe-area-inset-right));z-index:50;font-family:'SF Mono',Menlo,monospace;font-size:10px;font-weight:700;letter-spacing:.14em;color:rgba(181,164,147,.6);background:rgba(10,9,8,.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(46,39,34,.8);padding:6px 10px;border-radius:20px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .15s}.ops-chip:hover{color:#22d3ee;border-color:#22d3ee}.ops-chip span{width:5px;height:5px;border-radius:50%;background:#22d3ee;box-shadow:0 0 6px #22d3ee}</style>
-<a class="ops-chip" href="https://showcase.dreytools.com" target="_blank" rel="noopener" title="One-Person Software — see all 11 tools"><span></span>OPS</a>
 <script src="https://brand.dreytools.com/ops.js" defer></script>
 </body>
 </html>
